@@ -1,0 +1,27 @@
+# Project Standards
+
+## Data Fetching
+
+- **Use Server Components (default):**  
+  Fetch data directly in server components by making them `async`.  
+  _Avoid using `useEffect` for data fetching._
+
+  ```js
+  // Example (React Server Component)
+  export default async function Page() {
+    const data = await fetchData();
+    return <div>{data}</div>;
+  }
+  ```
+
+## API Keys & POST Requests
+
+- **Avoid exposing API keys on the client side, especially for POST requests.**
+- **Use Server Actions:**  
+  Handle sensitive operations and POST requests via server actions.
+
+- **Use `revalidatePath` to refresh data after mutations.**
+
+## Authentication
+
+- **Use Clerk for authentication in the initial phases of development.**
