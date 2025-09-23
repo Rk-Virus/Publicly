@@ -2,6 +2,8 @@
 
 ## Data Fetching
 
+- **Use TypeScript as much as possible**  
+
 - **Use Server Components (default):**  
   Fetch data directly in server components by making them `async`.  
   _Avoid using `useEffect` for data fetching._
