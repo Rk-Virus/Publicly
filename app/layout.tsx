@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
+import NavBar from "@/components/custom/NavBar";
+import { ThemeProvider } from "@/components/theme-provider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,18 +25,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="p-4 flex justify-between items-center border-b">
-          <Link href="/">Logo@publicly</Link>
-          <nav ><ul className="flex justify-between gap-6"><li>Search</li>
-          <Link href={"/about"}>About</Link>
-          <li> <Link href={"/"}>Get the App</Link> </li></ul></nav>
-        </header>
-        {children}
-        <footer className="px-6">Here is the global footer</footer>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          
+          {children}
+        </ThemeProvider>
+
+      <footer className="px-6">Here is the global footer</footer>
       </body>
     </html>
   );
