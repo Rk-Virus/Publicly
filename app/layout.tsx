@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NavBar from "@/components/custom/NavBar";
 import { ThemeProvider } from "@/components/theme-provider"
 
 const geistSans = Geist({
@@ -34,12 +33,11 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        >
-          
+        >          
           {children}
         </ThemeProvider>
 
-      <footer className="px-6">Here is the global footer</footer>
+      {/* <footer className="px-6">Here is the global footer</footer> */}
       </body>
     </html>
   );

@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd, Icon, PersonStanding, SeparatorVerticalIcon } from "lucide-react"
+import { PersonStanding } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
