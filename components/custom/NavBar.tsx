@@ -52,6 +52,14 @@ const NavBar = () => {
 
                     <li>
                       <Link
+                        href="/login"
+                      >
+                        Login
+                      </Link>
+                    </li>
+                    
+                    <li>
+                      <Link
                         href="/about"
                         className={`${linkBase} ${isActive("/about") ? linkActive : ""}`}
                       >
@@ -59,21 +67,13 @@ const NavBar = () => {
                       </Link>
                     </li>
 
-                    <li>
-                      <Link
-                        href="/login"
-                      >
-                        Login
-                      </Link>
-                    </li>
-
-                    <li>
+                    {/* <li>
                       <Link
                         href="/"
                       >
                         Get the App
                       </Link>
-                    </li>
+                    </li> */}
                 </ul>
             </nav>
         </header>

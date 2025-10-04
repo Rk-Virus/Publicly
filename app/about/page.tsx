@@ -38,7 +38,7 @@ export default function About() {
               <Link href="/login">Join the Community</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="/posts">Explore Stories</Link>
+              <Link href="/stories">Explore Stories</Link>
             </Button>
           </div>
         </div>
