@@ -1,14 +1,65 @@
+'use client'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
+import api from "@/app/lib/axios"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import axios from "axios"
+import { useAuth } from "@/context/AuthContext"
 
 export default function LoginForm({
   className
 }: React.ComponentProps<"form">) {
+
+  const router = useRouter();
+  //context 
+  const {addLogin} = useAuth();
+  // form states
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  //handling registration
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    console.log(formData)
+    const email = String(formData.get("email") ?? "").trim()
+    const password = String(formData.get("password") ?? "").trim();
+
+    console.log(email, password)
+    const API = "/user/login";
+    try {
+      const res = await api.post(API, { email, password });
+
+      if (res.status === 200) {
+        console.log("User login successfully");
+        console.log(res.data)
+        // todo: show success or redirect
+        addLogin(res.data.userId, res.data.token); // context + local_storage
+        alert(res.data.message || "Login successful!");
+        router.push("/");
+      } else {
+        setError(res.data?.error ?? "Login failed");
+      }
+    } catch (err) {
+      let msg = "Network error";
+      if (axios.isAxiosError(err))  msg = err.response?.data?.msg 
+      console.error("Request error:", err);
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} >
+    <form className={cn("flex flex-col gap-6", className)} onSubmit={handleLogin} >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         {/* <p className="text-muted-foreground text-sm text-balance">
@@ -18,23 +69,24 @@ export default function LoginForm({
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="user@publicly.com" required />
+          <Input id="email" type="email" name="email" placeholder="user@publicly.com" required />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
-            <a
+            <Link
               href="#"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               Forgot your password?
-            </a>
+            </Link>
           </div>
-          <Input id="password" type="password" required />
+          <Input id="password" type="password" name="password" required />
         </div>
-        <Button type="submit" className="w-full">
-          Login
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </Button>
+        {error && <p className="text-sm text-red-600">{error}</p>}
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
             Or continue with

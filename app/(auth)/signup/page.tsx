@@ -1,14 +1,78 @@
+'use client'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
+import { useState } from "react"
+import axios from "axios"
+import { z } from "zod"
+import api from "@/app/lib/axios"
+import { useRouter } from "next/navigation"
+
+const signupSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+})
 
 export default function SignupForm({
   className
 }: React.ComponentProps<"form">) {
+
+  const router = useRouter();
+  // form states
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  //handling registration
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    console.log(formData)
+    const name = String(formData.get("name") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim()
+    const password = String(formData.get("password") ?? "").trim();
+
+    const userData = { name, email, password };
+
+    // zod validation
+    const parsed = signupSchema.safeParse(userData);
+    if (!parsed.success) {
+      const issues = parsed.error.issues.map(issue => issue.message).join("; ");
+      setError(issues);
+      setLoading(false);
+      return;
+    }
+
+    const API = "/user/register";
+    try {
+      const res = await api.post(API, { name, email, password });
+
+      if (res.status === 201) {
+        console.log("User registered successfully");
+        // todo: show success or redirect
+        alert("Registration successful! Please login.");
+        router.push("/login");
+      } else {
+        setError(res.data?.error ?? "Registration failed");
+      }
+    } catch (err) {
+      let msg = "Network error";
+      if (axios.isAxiosError(err))  msg = err.response?.data?.error 
+      console.error("Request error:", err);
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} >
+    <form noValidate className={cn("flex flex-col gap-6", className)} onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Let&apos;s make a change!</h1>
         {/* <p className="text-muted-foreground text-sm text-balance">
@@ -19,27 +83,28 @@ export default function SignupForm({
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="name">Name</Label>
-          <Input id="name" type="text" placeholder="xyz kumar or whatever" required />
+          <Input id="name" type="text" name="name" placeholder="xyz kumar or whatever" autoComplete="name" required />
         </div>
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="user@publicly.com" required />
+          <Input id="email" type="email" name="email" placeholder="user@publicly.com" autoComplete="email" required />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
-            <a
+            <Link
               href="#"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               Forgot your password?
-            </a>
+            </Link>
           </div>
-          <Input id="password" type="password" required />
+          <Input id="password" type="password" name="password" autoComplete="new-password" required />
         </div>
-        <Button type="submit" className="w-full">
-          Signup
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Signing up..." : "Sign Up"}
         </Button>
+        {error && <div className="text-red-500 text-center">{error}</div>}
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
             Or continue with

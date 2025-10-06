@@ -34,7 +34,7 @@ const NavBar = () => {
     return (
         <>
         <header className="p-4 px-8 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/50">
-            <Link href="/" className="font-semibold text-zinc-900 dark:text-zinc-100">Logo@publicly</Link>
+            <Link href="/" className="font-semibold text-zinc-900 dark:text-zinc-100">Publicly</Link>
 
             <nav>
                 <ul className="flex items-center gap-6">
